@@ -91,10 +91,6 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w = iw
 	}
 
-	for _, f := range s.before {
-		ctx = f(ctx, r)
-	}
-
 	// Decode the body into an  object
 	var req Request
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -103,6 +99,12 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.logger.Log("err", rpcerr)
 		s.errorEncoder(ctx, rpcerr, w)
 		return
+	}
+
+	ctx = context.WithValue(ctx, httptransport.ContextKeyRequestMethod, req.Method)
+
+	for _, f := range s.before {
+		ctx = f(ctx, r)
 	}
 
 	// Get the endpoint and codecs from the map using the method

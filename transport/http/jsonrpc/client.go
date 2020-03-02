@@ -159,6 +159,8 @@ func (c Client) Endpoint() endpoint.Endpoint {
 			}()
 		}
 
+		ctx = context.WithValue(ctx, httptransport.ContextKeyRequestMethod, c.method)
+
 		var params json.RawMessage
 		if params, err = c.enc(ctx, request); err != nil {
 			return nil, err
