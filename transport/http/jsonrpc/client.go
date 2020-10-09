@@ -185,6 +185,8 @@ func (c Client) Endpoint() endpoint.Endpoint {
 			return nil, err
 		}
 
+		req.ContentLength = int64(b.Len())
+
 		for _, f := range c.before {
 			ctx = f(ctx, req)
 		}
